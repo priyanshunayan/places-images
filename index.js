@@ -1,8 +1,21 @@
 const puppeteer = require("puppeteer");
-const fs = require("fs");
-const path = require("path");
+
+/* const firebaseConfig = {
+  apiKey: "AIzaSyAuyruCuUsb-GQjvuuHX-QTBNKDfcKm5yE",
+  authDomain: "sih2020-c52a5.firebaseapp.com",
+  databaseURL: "https://sih2020-c52a5.firebaseio.com",
+  projectId: "sih2020-c52a5",
+  storageBucket: "sih2020-c52a5.appspot.com",
+  messagingSenderId: "488560607914",
+  appId: "1:488560607914:web:6030dafe76c027933846d3",
+  measurementId: "G-SGEWJV8X9Q"
+};
+firebase.initializeApp(firebaseConfig);
+const database = firebase.database(); */
+
 (async () => {
   const browser = await puppeteer.launch({
+    args: ["--no-sandbox"],
     headless: false
   });
   const page = await browser.newPage();
@@ -26,36 +39,63 @@ const path = require("path");
   // await page.screenshot({ path: "google.png" });
   console.log("Waiting....");
   //await page.waitForSelector(".gallery-image-high-res .loaded");
+  await page.addScriptTag({
+    url: "https://www.gstatic.com/firebasejs/7.6.1/firebase-app.js"
+  });
+  await page.addScriptTag({
+    url: "https://www.gstatic.com/firebasejs/7.6.1/firebase.js"
+  });
+  const jsHandle = await page
+    .evaluate(async () => {
+      /* */
+      let arr = [];
 
-  const jsHandle = await page.evaluate(async () => {
-    let arr = [];
+      const firebaseConfig = {
+        apiKey: "AIzaSyAuyruCuUsb-GQjvuuHX-QTBNKDfcKm5yE",
+        authDomain: "sih2020-c52a5.firebaseapp.com",
+        databaseURL: "https://sih2020-c52a5.firebaseio.com",
+        projectId: "sih2020-c52a5",
+        storageBucket: "sih2020-c52a5.appspot.com",
+        messagingSenderId: "488560607914",
+        appId: "1:488560607914:web:6030dafe76c027933846d3",
+        measurementId: "G-SGEWJV8X9Q"
+      };
+      firebase.initializeApp(firebaseConfig);
+      console.log(firebase, "FIREBASE");
+      const database = firebase.database();
+      function ScrollAndGetNodes() {
+        console.log("scrolling");
+        let elementToScroll = document.getElementsByClassName(
+          "section-layout section-scrollbox scrollable-y scrollable-show"
+        )[0];
+        elementToScroll.scrollTo({
+          top: 100000,
+          left: 0,
+          behavior: "smooth"
+        });
+        arr = document.querySelectorAll(".gallery-image-high-res.loaded");
 
-    function ScrollAndGetNodes() {
-      console.log("scrolling");
-      let elementToScroll = document.getElementsByClassName(
-        "section-layout section-scrollbox scrollable-y scrollable-show"
-      )[0];
-      elementToScroll.scrollTo({
-        top: 1000000,
-        left: 0,
-        behavior: "smooth"
-      });
-      arr = document.querySelectorAll(".gallery-image-high-res.loaded");
-      arr.forEach(elem => {
-        console.log(elem.style.backgroundImage);
-      })
-      /* console.log(
+        arr.forEach(elem => {
+          let $string = elem.style.backgroundImage.split('"');
+          database.ref(`aguada_fort/`).push({
+            url: $string[1]
+          });
+          console.log($string[1]);
+        });
+        /* console.log(
         "arr inside",
         document.querySelectorAll(".gallery-image-high-res.loaded")
       ); */
-    }
-    //console.log("scrolling");
-    if (arr.length <= 100) {
-      setInterval(ScrollAndGetNodes, 2000);
-    }
+      }
+      //console.log("scrolling");
+      /*  while (arr.length <= 100) {
+       setTimeout(ScrollAndGetNodes, 500);
+     } */
+      if (arr.length <= 100) {
+        setInterval(ScrollAndGetNodes, 2000);
+      }
 
-
-    /*  setTimeout(() => {
+      /*  setTimeout(() => {
       new Promise((resolve, reject) => {
         console.log("Inside promise", 9007199254740991);
 
@@ -71,12 +111,15 @@ const path = require("path");
       });
     }, 4000); */
 
-    /*  const $selector = document.querySelectorAll(
+      /*  const $selector = document.querySelectorAll(
       ".gallery-image-high-res.loaded"
     );
     console.log("Logging", $selector); */
-    return arr;
-  });
+      return arr;
+    })
+    .then(res => {
+      console.log("RES is", res);
+    });
   /*   await page.waitForSelector(".gallery-image-high-res.loaded");
   page
     .$$(".gallery-image-high-res.loaded")
@@ -86,10 +129,6 @@ const path = require("path");
     .catch(e => {
       console.log("ERR", e);
     }); */
-  setTimeout(() => {
-    console.log(jsHandle);
-  }, 6000);
-
   /*   console.log("JSHANDLE", arr);
   const result = await page.evaluate(e => {
     console.log("E=>", e);
@@ -98,4 +137,5 @@ const path = require("path");
   }, jsHandle); */
   //console.log(result);
   //await browser.close();
+  console.log(jsHandle);
 })();
