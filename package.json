@@ -1,0 +1,16 @@
+{
+  "name": "places-images",
+  "version": "1.0.0",
+  "description": "Scraper to images of places",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "puppeteer": "^2.0.0",
+    "puppeteer-autoscroll-down": "^0.1.2",
+    "puppeteer-core": "^2.0.0"
+  }
+}
