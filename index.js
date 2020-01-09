@@ -77,10 +77,11 @@ const database = firebase.database(); */
 
         arr.forEach(elem => {
           let $string = elem.style.backgroundImage.split('"');
-          database.ref(`aguada_fort/`).push({
-            url: $string[1]
-          });
-          console.log($string[1]);
+          let data = $string[1].split("/");
+          //const updates = {};
+          /* updates["url"] = data;
+          database.ref(`aguada_fort/`).update(updates); */
+          console.log($string[1].split("/"));
         });
         /* console.log(
         "arr inside",
