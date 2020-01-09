@@ -1,7 +1,8 @@
 var fs = require("fs"),
   request = require("request");
-
+const download = require("image-downloader");
 const firebase = require("firebase");
+const https = require("https");
 const firebaseConfig = {
   apiKey: "AIzaSyAuyruCuUsb-GQjvuuHX-QTBNKDfcKm5yE",
   authDomain: "sih2020-c52a5.firebaseapp.com",
@@ -14,26 +15,36 @@ const firebaseConfig = {
 };
 firebase.initializeApp(firebaseConfig);
 //const database = firebase.database();
-const download = function(uri, filename, callback) {
-  request.head(uri, function(err, res, body) {
-    console.log("content-type:", res.headers["content-type"]);
-    console.log("content-length:", res.headers["content-length"]);
 
-    request(uri)
-      .pipe(fs.createWriteStream(filename))
-      .on("close", callback);
+function saveToDisk(url, localPath) {
+  console.log("SAVEING+++++");
+  const string = localPath.split("/");
+  const string_name = "agoda_fort/" + string[4];
+  const file = fs.createWriteStream(string_name);
+  const request = https.get(url, res => {
+    console.log("RES", res);
+    //  res.pipe(file);
   });
-};
+}
+
 return firebase
   .database()
   .ref("/aguada_fort/")
   .once("value")
   .then(function(snapshot) {
     Object.values(snapshot.val()).forEach((val, index) => {
-      download(val.url, index, function() {
-        console.log("done");
-      });
-      console.log(val.url);
+      console.log(val, val.url);
+      saveToDisk(val, val);
+      /*       const options = {
+        url: val,
+        dest: `/agoda_fort/${val}` // Save to /path/to/dest/image.jpg
+      };
+
+      download
+        .image(options)
+        .then(({ filename, image }) => {
+          console.log("Saved to", filename);
+        })
+        .catch(err => console.error(err)); */
     });
-    //console.log();
   });

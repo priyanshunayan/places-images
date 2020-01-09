@@ -68,21 +68,22 @@ const database = firebase.database(); */
         let elementToScroll = document.getElementsByClassName(
           "section-layout section-scrollbox scrollable-y scrollable-show"
         )[0];
-        elementToScroll.scrollTo({
-          top: 100000,
+        elementToScroll.scrollBy({
+          top: 2000,
           left: 0,
           behavior: "smooth"
         });
         arr = document.querySelectorAll(".gallery-image-high-res.loaded");
-
+        console.log(arr.length);
         arr.forEach(elem => {
           let $string = elem.style.backgroundImage.split('"');
           let data = $string[1].split("/");
-          //const updates = {};
-          /* updates["url"] = data;
-          database.ref(`aguada_fort/`).update(updates); */
-          console.log($string[1].split("/"));
+          let key = data[4];
+          const updates = {};
+          updates[key] = $string[1];
+          database.ref(`aguada_fort/`).update(updates);
         });
+
         /* console.log(
         "arr inside",
         document.querySelectorAll(".gallery-image-high-res.loaded")
@@ -92,9 +93,7 @@ const database = firebase.database(); */
       /*  while (arr.length <= 100) {
        setTimeout(ScrollAndGetNodes, 500);
      } */
-      if (arr.length <= 100) {
-        setInterval(ScrollAndGetNodes, 2000);
-      }
+      setInterval(ScrollAndGetNodes, 2000);
 
       /*  setTimeout(() => {
       new Promise((resolve, reject) => {
