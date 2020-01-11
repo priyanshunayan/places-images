@@ -15,11 +15,10 @@ const database = firebase.database(); */
 
 (async () => {
   const browser = await puppeteer.launch({
-    args: ["--no-sandbox"],
+    args: ["--no-sandbox", '--disable-setuid-sandbox'],
     headless: false
   });
   const page = await browser.newPage();
-
   /* await page.setRequestInterception(true);
   page.on("request", interceptedRequest => {
     if (interceptedRequest.resourceType() == "image") {
@@ -34,7 +33,7 @@ const database = firebase.database(); */
       interceptedRequest.continue(); */
   /*   }); */
   await page.goto(
-    "https://www.google.com/maps/place/Aguada+Fort/@15.492457,73.7738906,3a,75y,90t/data=!3m8!1e2!3m6!1sAF1QipMtO6F8Ni_a7ppfg07eOzBiPGZVPRshBDZsSfFf!2e10!3e12!6shttps:%2F%2Flh5.googleusercontent.com%2Fp%2FAF1QipMtO6F8Ni_a7ppfg07eOzBiPGZVPRshBDZsSfFf%3Dw160-h120-k-no!7i4032!8i3024!4m5!3m4!1s0x3bbfc175c68cbd6b:0xa3837630b3697b1c!8m2!3d15.4925631!4d73.7731561"
+    "https://www.google.com/maps/place/Azad+Maidan/@15.500124,73.8261919,3a,75y,90t/data=!3m8!1e2!3m6!1sAF1QipNEtxfaIxjH3SACtq2i3GzZyFgLc7cwa2JjO_UI!2e10!3e12!6shttps:%2F%2Flh5.googleusercontent.com%2Fp%2FAF1QipNEtxfaIxjH3SACtq2i3GzZyFgLc7cwa2JjO_UI%3Dw224-h298-k-no!7i3456!8i4608!4m5!3m4!1s0x3bbfc0893c21dc7f:0x565baf15933571ea!8m2!3d15.500124!4d73.8261919"
   );
   // await page.screenshot({ path: "google.png" });
   console.log("Waiting....");
@@ -48,6 +47,12 @@ const database = firebase.database(); */
   const jsHandle = await page
     .evaluate(async () => {
       /* */
+      const script1 = document.createElement('script');
+      script1.src = "https://www.gstatic.com/firebasejs/7.6.1/firebase-app.js";
+      document.getElementsByTagName('head')[0].appendChild(script1);
+      const script2 = document.createElement('script');
+      script2.src = "https://www.gstatic.com/firebasejs/7.6.1/firebase.js";
+      document.getElementsByTagName('head')[0].appendChild(script2);
       let arr = [];
 
       const firebaseConfig = {
@@ -63,13 +68,15 @@ const database = firebase.database(); */
       firebase.initializeApp(firebaseConfig);
       console.log(firebase, "FIREBASE");
       const database = firebase.database();
+
       function ScrollAndGetNodes() {
         console.log("scrolling");
         let elementToScroll = document.getElementsByClassName(
           "section-layout section-scrollbox scrollable-y scrollable-show"
         )[0];
+        for (let i = 0; i < 1000000000; i++) {};
         elementToScroll.scrollBy({
-          top: 2000,
+          top: 5000,
           left: 0,
           behavior: "smooth"
         });
@@ -78,10 +85,15 @@ const database = firebase.database(); */
         arr.forEach(elem => {
           let $string = elem.style.backgroundImage.split('"');
           let data = $string[1].split("/");
-          let key = data[4];
-          const updates = {};
-          updates[key] = $string[1];
-          database.ref(`aguada_fort/`).update(updates);
+
+          if (data.length > 4) {
+            //console.log(data);
+            let key = data[4].replace(/[&\/\\#,+()$~%.'":*?<>{}]/g, '');
+            const updates = {};
+            updates[key] = $string[1];
+            database.ref(`church_of_st_francis_of_assisi_goa/`).update(updates);
+          }
+
         });
 
         /* console.log(
@@ -93,7 +105,7 @@ const database = firebase.database(); */
       /*  while (arr.length <= 100) {
        setTimeout(ScrollAndGetNodes, 500);
      } */
-      setInterval(ScrollAndGetNodes, 2000);
+      setInterval(ScrollAndGetNodes, 4000);
 
       /*  setTimeout(() => {
       new Promise((resolve, reject) => {

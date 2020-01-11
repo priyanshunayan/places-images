@@ -31,15 +31,16 @@ return firebase
   .database()
   .ref("/aguada_fort/")
   .once("value")
-  .then(function(snapshot) {
+  .then(function (snapshot) {
     Object.values(snapshot.val()).forEach((val, index) => {
       console.log(val, val.url);
       const options = {
-        directory: "agoda_fort/",
-        filename: val.split("/")[4]
+        directory: "aguada_fort/",
+        filename: val.split("/")[4],
+        timeout: 50000000
       };
       download(val, options, err => {
-        console.log(err);
+        console.log("ERRor", err, val);
       });
       /*       const options = {
         url: val,
