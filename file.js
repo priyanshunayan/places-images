@@ -29,18 +29,31 @@ function saveToDisk(url, localPath) {
 
 return firebase
   .database()
-  .ref("/aguada_fort/")
+  .ref("/viceroys_arch/")
   .once("value")
   .then(function (snapshot) {
+    console.log(Object.values(snapshot.val()).length);
     Object.values(snapshot.val()).forEach((val, index) => {
       console.log(val, val.url);
       const options = {
-        directory: "aguada_fort/",
+        directory: "viceroys_arch/",
         filename: val.split("/")[4],
         timeout: 50000000
       };
-      download(val, options, err => {
-        console.log("ERRor", err, val);
+      download(val, options, (err, succ) => {
+        if (err) {
+          console.log("Retrying.....", err, val);
+          download(val, options, (e, success) => {
+            if (e) {
+              console.log("Ye erre");
+            } else {
+              console.log("Ho gya", success);
+            }
+          })
+        } else {
+          console.log(succ);
+        }
+
       });
       /*       const options = {
         url: val,
